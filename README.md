@@ -108,3 +108,57 @@ export class MoviesController {
     }
 }
 ```
+
+## 5. More Routes
+`express.js`나 `Nest.js`에서 `router`의 순서를 주의해야한다.
+
+```javascript
+    @Get('/:id')
+    getOne(@Param('id') item) {
+        return `This will return one movie with the id : ${item}`
+    }
+
+    @Get('/search')
+    search() {
+        return `We are searching for a movie with a title : `
+    }
+
+    // http://localhost:3000/movies/search
+    // This will return one movie with the id : search
+```
+
+```javascript
+
+    @Get('/search')
+    search() {
+        return `We are searching for a movie with a title : `
+    }
+
+    @Get('/:id')
+    getOne(@Param('id') item) {
+        return `This will return one movie with the id : ${item}`
+    }
+
+    // http://localhost:3000/movies/search
+    // We are searching for a movie with a title :
+```
+
+```javascript
+    @Get('/search')
+    search(@Query('title') title) {
+        return `We are searching for a movie with a title : ${title}`
+    }
+    
+    @Post()
+    create(@Body() movieData) {
+        return movieData
+    }
+
+    @Patch('/:id')
+    patch(@Param('id') movieId, @Body() updateData) {
+        return {
+            updatedMovie : movieId,
+            ...updateData
+        }
+    }
+```
