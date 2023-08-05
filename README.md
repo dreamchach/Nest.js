@@ -466,3 +466,65 @@ readonly genres : string[]
 readonly genres : string[] 
 ```
 
+## 8. Modules and Dependency Injection
+1. 본디 `app.module.ts`에서는 `app.controller.ts`와 `app.service.ts`를 사용하는 것이 좋다.
+2. 따라서 `movies.controller.ts`와 `movies.service.ts`를 위한 모듈을 새롭게 만들어야한다.
+3. 새로운 모듈을 만드는 방법
+```bash
+nest g mo
+```
+모듈명은 `controller`와 `service`와 동일하게 하는 것이 좋다.
+따라서 모듈명을 `movies`로 해주었다.
+
+4. `movies`폴더에  `movies.module.ts`가 추가되었는지 확인한다.
+```javascript
+// movies.module.ts
+
+import { Module } from '@nestjs/common';
+import { MoviesController } from './movies.controller';
+import { MoviesService } from './movies.service';
+
+@Module({
+    controllers : [MoviesController],
+    providers : [MoviesService]
+})
+export class MoviesModule {}
+```
+
+5. `app.module.ts`를 정리한다.
+```javascript
+import { Module } from '@nestjs/common';
+import { MoviesModule } from './movies/movies.module';
+import { AppController } from './app.controller';
+import { TestModule } from './test/test.module';
+
+
+@Module({
+  imports: [MoviesModule, TestModule],
+  controllers: [AppController],
+  providers: [],
+})
+export class AppModule {}
+```
+
+6. 모듈은 여러개를 import 할 수 있다. 
+
+7. `Dependency Injection`
+
+```javascript
+@Module({
+    controllers : [MoviesController],
+    // providers : [MoviesService]
+})
+```
+```bash
+Error: Nest can't resolve dependencies of the MoviesController (?). Please make sure that the argument MoviesService at index [0] is available in the MoviesModule context.
+
+Potential solutions:
+- Is MoviesModule a valid NestJS module?
+- If MoviesService is a provider, is it part of the current MoviesModule?
+- If MoviesService is exported from a separate @Module, is that module imported within MoviesModule?
+  @Module({
+    imports: [ /* the Module containing MoviesService */ ]
+  })
+```
