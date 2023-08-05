@@ -162,3 +162,134 @@ export class MoviesController {
         }
     }
 ```
+
+## 6. Movies Service
+```bash
+nest g s
+```
+
+`service`의 이름을 `controller`와 동일하게 만들 수 있다. 그 경우에는 동일한 폴더에 `service` 파일들이 생성된다.
+
+```javascript
+// movies.service.ts
+
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class MoviesService {
+    private movies = []
+
+    getAll() {
+        return this.movies
+    }
+
+    getOne(id) {
+        return this.movies.find((movie) => String(movie.id) === String(id))
+    }
+
+    remove(id) {
+        this.movies.filter((movie) => String(movie.id) !== String(id))
+        return true
+    }
+
+    create(movieData) {
+        this.movies.push({
+            id : this.movies.length + 1,
+            ...movieData
+        })
+    }
+}
+
+```
+
+만약 `movies`에 타입을 넣고 싶다면 `(파일명).entities.ts`로 파일을 만든다.
+```javascript
+// movies.entities.ts
+
+export class Moive {
+    id: number;
+    title: string;
+    year: number;
+    genres: string[]
+}
+```
+
+다만, 타입스크립트는 대부분의 타입들을 스스로 지정할 수 있을 정도로 똑똑하므로 필수적이지는 않다.
+
+```javascript
+// movies.controller.ts
+
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { MoviesService } from './movies.service';
+
+@Controller('movies')
+export class MoviesController {
+    constructor(private readonly moviesService : MoviesService) {}
+
+    @Get()
+    getAll() {
+        return this.moviesService.getAll()
+    }
+
+    @Get('/:id')
+    getOne(@Param('id') item) {
+        return this.moviesService.getOne(item)
+    }
+
+    @Post()
+    create(@Body() movieData) {
+        return this.moviesService.create(movieData)
+    }
+
+    @Delete('/:id')
+    remove(@Param('id') movieId) {
+        return this.moviesService.remove(movieId)
+    }
+
+    @Patch('/:id')
+    patch(@Param('id') movieId, @Body() updateData) {
+        return {
+            updatedMovie : movieId,
+            ...updateData
+        }
+    }
+}
+```
+
+```javascript
+// movies.service.ts
+...
+    getOne(id) {
+        const movie = this.movies.find((movie) => String(movie.id) === String(id))
+        if(!movie) {
+            throw new NotFoundException(`Movie with ID ${id} not found.`)
+        }else return movie
+    }
+
+    remove(id) {
+        this.getOne(id)
+        this.movies = this.movies.filter((movie) => String(movie.id) !== String(id))
+        return true
+    }
+
+    patch(movieId, updateData) {
+        const movie = this.getOne(movieId)
+        this.remove(movieId)
+        this.movies.push({
+            ...movie,
+            ...updateData
+        })
+    }
+...
+```
+
+```javascript
+...
+    @Patch('/:id')
+    patch(@Param('id') movieId, @Body() updateData) {
+        return this.moviesService.patch(movieId, updateData)
+    }
+...
+```
+
+`NotFoundException()` 함수로 예외상황을 찾지 못했을 경우, 에러메시지를 날릴 수 있고, `remove()`함수에서 `getOne()`함수를 사용한 것 처럼 다른 함수를 사용할 수도 있다.
