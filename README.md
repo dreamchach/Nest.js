@@ -528,3 +528,8 @@ Potential solutions:
     imports: [ /* the Module containing MoviesService */ ]
   })
 ```
+
+## 9. Express on NestJS
+- `Nest.js`는 `Express.js` 프레임워크를 기반으로 작동한다.
+- 따라서 `Nest.js`에서도 `@Req`와 `@Res`를 이용해서 `req`와 `res`를 받을 수 있다.
+- 하지만, `Nest.js`는 `Fantify`프레임워크도 기반으로 작동하기 때문에 `@Req, @Res`의 사용을 권장하지 않는다.
