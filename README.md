@@ -533,3 +533,96 @@ Potential solutions:
 - `Nest.js`는 `Express.js` 프레임워크를 기반으로 작동한다.
 - 따라서 `Nest.js`에서도 `@Req`와 `@Res`를 이용해서 `req`와 `res`를 받을 수 있다.
 - 하지만, `Nest.js`는 `Fantify`프레임워크도 기반으로 작동하기 때문에 `@Req, @Res`의 사용을 권장하지 않는다.
+
+## 10. Introduction to Testing in Nest
+- `jest` 라이브러리 사용
+- `jest` 라이브러리는 `JavaScript` 테스트를 쉽게 해준다.
+- `.spec`라고 적힌 파일들은 원본 파일들을 테스팅하는 파일이다.
+- `jest` 라이브러리는 `.spec`라고 적힌 파일들을 찾는다.
+
+파일들을 테스트해보면,
+```bash
+kimjiyeong@gimjiyeong-ui-Macmini Nest.js % npm run test:cov
+
+> nest.js@0.0.1 test:cov
+> jest --coverage
+
+ PASS  src/test/test.service.spec.ts
+ PASS  src/app/app.controller.spec.ts
+ PASS  src/movies/movies.service.spec.ts
+ PASS  src/test/test.controller.spec.ts
+-----------------------|---------|----------|---------|---------|-------------------
+File                   | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-----------------------|---------|----------|---------|---------|-------------------
+All files              |   18.07 |        0 |    5.55 |   15.06 |                   
+ src                   |   22.22 |      100 |       0 |   18.75 |                   
+  app.controller.ts    |      80 |      100 |       0 |      75 | 7                 
+  app.module.ts        |       0 |      100 |     100 |       0 | 1-12              
+  main.ts              |       0 |      100 |       0 |       0 | 1-14              
+ src/movies            |    9.52 |        0 |    6.66 |     8.1 |                   
+  movies.controller.ts |       0 |      100 |       0 |       0 | 1-37              
+  movies.module.ts     |       0 |      100 |     100 |       0 | 1-9               
+  movies.service.ts    |   22.22 |        0 |    12.5 |      20 | 10-36             
+ src/movies/DTO        |       0 |      100 |     100 |       0 |                   
+  create-movie.dto.ts  |       0 |      100 |     100 |       0 | 1-12              
+  update-movie.dto.ts  |       0 |      100 |     100 |       0 | 1-4               
+ src/movies/entities   |       0 |      100 |     100 |       0 |                   
+  movie.entities.ts    |       0 |      100 |     100 |       0 | 1                 
+ src/test              |   53.84 |      100 |       0 |      50 |                   
+  test.controller.ts   |      80 |      100 |       0 |      75 | 7                 
+  test.module.ts       |       0 |      100 |     100 |       0 | 1-9               
+  test.service.ts      |     100 |      100 |     100 |     100 |                   
+-----------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 4 passed, 4 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        4.215 s
+Ran all test suites.
+```
+
+이번 프로젝트는 위와 같이 나타난다.
+
+표 안에서, `Funcs`는 해당 파일의 함수가 몇 퍼센트 테스트가 진행되었는지 나타나고, `Lines`는 해당 파일의 라인이 몇 퍼센트 테스트가 진행되었는지 나타나며, `Uncovered Line`을 통해 테스트가 진행되지 못한 줄이 어디있는지 확인할 수 있다.
+
+```bash
+kimjiyeong@gimjiyeong-ui-Macmini Nest.js % npm run test:watch
+
+No tests found related to files changed since last commit.
+Press `a` to run all tests, or run Jest with `--watchAll`.
+
+Watch Usage
+ › Press a to run all tests.
+ › Press f to run only failed tests.
+ › Press p to filter by a filename regex pattern.
+ › Press t to filter by a test name regex pattern.
+ › Press q to quit watch mode.
+ › Press Enter to trigger a test run.
+
+a
+
+PASS  src/test/test.service.spec.ts
+PASS  src/movies/movies.service.spec.ts
+PASS  src/test/test.controller.spec.ts
+PASS  src/app/app.controller.spec.ts
+
+Test Suites: 4 passed, 4 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        1.633 s, estimated 2 s
+Ran all test suites.
+
+Watch Usage: Press w to show more.
+
+```
+
+위를 보면 4개의 `.spec`파일을 전부 테스트 완료했다는 사실을 알 수 있다.
+
+- 단위테스트(유닛테스트)는 모든 `function`을 따로 테스트 하는 것을 말한다. 
+- 단위테스트는 서비스에서 분리된 유닛을 테스트한다.
+
+- e2e테스트(end-to-end 테스트)는 모든 시스템을 테스트한다
+- e2e테스트는 이 페이지로 가면 특정 페이지가 나와야하는 경우 사용한다.
+- 즉, e2e테스트는 사용자가 취할만한 행동들을 처음부터 끝까지 테스트한다.
+
+
