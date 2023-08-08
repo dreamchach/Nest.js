@@ -724,3 +724,83 @@ Watch Usage: Press w to show more.
     })
   });
 ```
+
+## 12. E2E Test
+- 기본적으로는 단위테스트와 동일하다.
+
+```javascript
+// movies.service.spec.ts
+// unit test
+
+describe('getAll', () => {
+    it('return array', () => {
+        const result = service.getAll()
+        expect(result).toBeInstanceOf(Array)
+    })
+})
+```
+
+```javascript
+// test/app.e2e-spec.ts
+// e2e test
+
+describe('/movies', () => {
+    it('GET', () => {
+        return request(app.getHttpServer())
+        .get('/movies')
+        .expect(200)
+        .expect([])
+    })
+
+    it('POST', () => {
+        return request(app.getHttpServer())
+        .post('/movies')
+        .send({
+            title: 'Test Movie',
+            writer: 'Test',
+            year: 2000,
+            genres: ['test']
+        })
+        .expect(201)
+    })
+
+    it('DELETE', () => {
+        return request(app.getHttpServer())
+        .delete('/movies')
+        .expect(404)
+    })
+})
+```
+
+`e2e test`는 동일한 경로를 `describe`로 삼고, 메서드에 따라 `it`을 사용한다.
+`requset(app.getHttpServer())`는 `http://localhost:3000`같은 서버 사용 시 이용되는 주소를 가리킨다.
+
+테스트 구동 서버와 실제 애플리케이션 구동 서버는 다르기 때문에 서버 환경을 동일하게 해 줄 필요성이 있다.
+
+```javascript
+// test/app.e2e-spec.ts
+describe('/movies/:id', () => {
+  it('GET', () => {
+    return request(app.getHttpServer())
+    .get('/movies/1')
+    .expect(200)
+  })
+  it.todo('DELETE')
+  it.todo('PATCH')
+})
+```
+이러한 함수가 있으면 테스트 구동 서버에서는 에러가 발생된다.
+왜냐하면, params의 타입이 실제로는 다르기 때문이다.
+그래서, 우리는 실제 서버에서 잠시간 params의 타입을 동일하게 해주기 위해 `Stirng()`이나 `Number()`를 사용하기도 했다.
+하지만 현재, 우리가 타입을 동일하게 사용하기 위해 사용하는 것은 아래의 함수이다.
+
+```javascript
+// main.ts
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist : true,
+    forbidNonWhitelisted : true,
+    transform : true
+  }))
+```
+
+
