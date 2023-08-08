@@ -626,3 +626,101 @@ Watch Usage: Press w to show more.
 - 즉, e2e테스트는 사용자가 취할만한 행동들을 처음부터 끝까지 테스트한다.
 
 
+## 11. Unit Test
+```javascript
+// movies.service.spec.ts
+
+import { Test, TestingModule } from '@nestjs/testing';
+import { MoviesService } from './movies.service';
+
+describe('MoviesService', () => {
+  ...
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  it('k-dream', () => {
+    expect(2 + 2).toEqual(4)
+  })
+});
+```
+
+```bash
+npm run test:watch
+
+PASS  src/movies/movies.service.spec.ts
+  MoviesService
+    ✓ should be defined (5 ms)
+    ✓ k-dream (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       2 passed, 2 total
+Snapshots:   0 total
+Time:        1.197 s, estimated 2 s
+Ran all test suites related to changed files.
+```
+
+`k-dream`의 값이 정상일 경우에는 문제없이 테스트를 통과하지만,
+
+```javascript
+...
+it('k-dream', () => {
+    expect(2 + 2).toEqual(5)
+})
+...
+```
+
+```bash
+ FAIL  src/movies/movies.service.spec.ts
+  MoviesService
+    ✓ should be defined (7 ms)
+    ✕ k-dream (2 ms)
+
+  ● MoviesService › k-dream
+
+    expect(received).toEqual(expected) // deep equality
+
+    Expected: 5
+    Received: 4
+
+      18 |
+      19 |   it('k-dream', () => {
+    > 20 |     expect(2 + 2).toEqual(5)
+         |                   ^
+      21 |   })
+      22 | });
+      23 |
+
+      at Object.<anonymous> (movies/movies.service.spec.ts:20:19)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 1 passed, 2 total
+Snapshots:   0 total
+Time:        1.252 s, estimated 2 s
+Ran all test suites related to changed files.
+
+Watch Usage: Press w to show more.
+```
+
+`k-dream`의 값이 비정상적인 경우, 위와 같은 에러가 발생한다.
+
+`npm run test:cov`로 확인해 볼 시, `Func`, `Line`이 전부 100%일 때, 테스트가 완료된 것을 알 수 있다.
+
+만약, 각 항목들을 테스트하기 전에 movie item이 필요로 된다면, `beforeEach()`내부에 미리 movie item을 생성 할 수 있다.
+`beforeEach()`는 각 항목들을 테스트하기 전에 시행된다.
+
+```javascript
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [MoviesService],
+    }).compile();
+
+    service = module.get<MoviesService>(MoviesService);
+    service.create({
+      title: 'Test Movie',
+      writer: 'Test',
+      year: 2000,
+      genres: ['test']
+    })
+  });
+```
